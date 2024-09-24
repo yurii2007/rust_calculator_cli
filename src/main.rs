@@ -1,5 +1,4 @@
-use std::io::prelude::*;
-use std::io::BufReader;
+use std::io::{ self, BufReader, Write, prelude::* };
 use std::fs::File;
 use anyhow::{ Result, Context };
 
@@ -12,28 +11,31 @@ struct Cli {
 }
 
 fn main() -> Result<()> {
+    let pb = indicatif::ProgressBar::new(100);
     let args = Cli::parse();
 
-    let file = File::open(&args.path).with_context(|| format!("could not read a file {:?}", &args.path))?;
+    let file = File::open(&args.path).with_context(||
+        format!("could not read a file {:?}", &args.path)
+    )?;
 
-    // let file = match result {
-    //     Ok(file) => { file }
-    //     Err(error) => {
-    //         return Err(
-    //             format!("Error reading file {:?}: {}", &args.path.to_str(), error.to_string())
-    //         );
-    //     }
-    // };
+    pb.inc(10);
 
     let reader = BufReader::new(file);
+
+    let stdout = io::stdout();
+    let mut handle = stdout.lock();
+
+    pb.inc(10);
 
     for line in reader.lines() {
         if let Ok(line) = line {
             if line.contains(&args.pattern) {
-                println!("{}", line);
+                writeln!(handle, "{}", line)?;
             }
         }
+        pb.inc(1);
     }
 
+    pb.finish();
     Ok(())
 }
