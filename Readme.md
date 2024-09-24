@@ -1,1 +1,1 @@
-https://rust-cli.github.io/book/tutorial/output.html
+https://rust-cli.github.io/book/in-depth/signals.html
