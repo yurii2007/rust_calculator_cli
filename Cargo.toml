@@ -6,4 +6,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.89"
 clap = { version = "4.5.18", features = ["derive"] }
+crossbeam-channel = "0.5.13"
+ctrlc = "3.4.5"
 indicatif = "0.17.8"
+signal-hook = "0.3.17"
