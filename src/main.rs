@@ -5,8 +5,16 @@ use std::fs::File;
 use std::thread;
 use std::time::Duration;
 use anyhow::{ Result, Context };
+use serde::{ Serialize, Deserialize };
 
 use clap::Parser;
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+struct ConfigFile {
+    name: String,
+    comfy: bool,
+    test: i64,
+}
 
 #[derive(Parser)]
 struct Cli {
@@ -15,6 +23,8 @@ struct Cli {
 }
 
 fn main() -> Result<()> {
+    let cfg: ConfigFile = confy::load("calculator_cli", "ConfigFile")?;
+    println!("{:?}", cfg);
     let pb = indicatif::ProgressBar::new(100);
     let args = Cli::parse();
 
@@ -75,7 +85,7 @@ fn main() -> Result<()> {
 
 fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
     let (sender, receiver) = bounded::<()>(100);
-    let _ =ctrlc::set_handler(move || {
+    let _ = ctrlc::set_handler(move || {
         let _ = sender.send(());
     });
 
